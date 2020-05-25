@@ -1,9 +1,9 @@
 import { Entity, Unique, PrimaryGeneratedColumn, JoinColumn, Column, OneToMany, JoinTable, ManyToMany, ManyToOne } from "typeorm";
-import { StudentDetails } from "./student_entity";
-import { Books } from "./books_entity";
+import { StudentModel } from "./student_entity";
+import { BookModel } from "./books_entity";
 
-@Entity()
-export class BooksInfo {
+@Entity({name: "BooksInfo"})
+export class BooksInfoModel {
 
     @PrimaryGeneratedColumn()
     @JoinColumn()
@@ -21,11 +21,11 @@ export class BooksInfo {
     @Column("varchar",{default: false})
     active: string
 
-    @ManyToOne(type => StudentDetails, studentTaken => studentTaken.bookInfo)
+    @ManyToOne(type => StudentModel, studentTaken => studentTaken.bookInfo)
     @JoinTable()
-    student: StudentDetails;
+    student: StudentModel;
 
-    @ManyToOne(type => Books, books => books.booksInfo)
+    @ManyToOne(type => BookModel, books => books.booksInfo)
     @JoinTable()
-    book: Books;
+    book: BookModel;
 }

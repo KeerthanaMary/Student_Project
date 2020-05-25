@@ -1,37 +1,20 @@
-import { getManager } from "typeorm";
-import { injectable } from "inversify";
-import { Books } from "../models/books_entity";
+import { getManager, Repository, getRepository, getConnectionManager } from "typeorm";
+import { injectable, inject } from "inversify";
+import { BookModel } from "../models/books_entity";
 import { BaseRepository } from "./base_repository";
-@injectable()
-export class BooksService extends BaseRepository<Books>{
+import TYPES from "../types/types";
 
-    baseRepository = new BaseRepository(Books);
-    constructor(){
-        super();
+@injectable()
+export class BooksRepository extends BaseRepository<BookModel> {
+    protected readonly _repository;
+    constructor(@inject(TYPES.booksORMRepository ) repository: Repository<BookModel>){
+        super(repository);
+        this._repository=repository;
     }
-    async createNew(books:Books)
-    {
-     return await this.baseRepository.createNew(books);
+
+    async getBook(bookId: number) {
+        return await this._repository.findOne(bookId,{ relations: ["booksInfo"] });
     }
-    // async createNewBook(book: Books) {
-    //     let newBook = await this.baseRepository.createNew(book);
-    //     return  newBook;
-    // }
-    // async getAllBooks() {
-    //     let books = await this.baseRepository.getAll();
-    //     return  books;
-    // }
-    // async getBook(bookId: number) {
-    //     return await getManager().getRepository(Books).findOne(bookId,{ relations: ["booksInfo"] });
-    // }
-    // async updateBook(bookId: number, updateBook: Books) {
-    //     let book = await this.baseRepository.updateOne(bookId,updateBook);
-    //     return  book;
-    // }
-    // async deleteBook(deleteBook: Books) {
-    //     let book = await this.baseRepository.deleteOne(deleteBook);
-    //     return  book;
-    // }
 
 
 }

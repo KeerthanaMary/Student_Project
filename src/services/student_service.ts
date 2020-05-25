@@ -1,30 +1,20 @@
-import { getManager } from "typeorm";
-import { StudentDetails } from "../models/student_entity";
+import { getManager, getRepository, Repository } from "typeorm";
+import { StudentModel } from "../models/student_entity";
 import { injectable, inject } from "inversify";
 import { BaseRepository } from "./base_repository";
+import TYPES from "../types/types";
 
 @injectable()
-export class StudentService extends BaseRepository<StudentDetails> {
-
-    baseRepository = new BaseRepository(StudentDetails);
-
-    async createNewStudent(newStudent: StudentDetails) {
-        let student = await this.baseRepository.createNew(newStudent);
-        return student;
+export class StudentRepository extends BaseRepository<StudentModel> {
+    protected readonly _repository;
+    constructor( @inject(TYPES.studentORMRepository ) repository: Repository<StudentModel>,){
+        super(repository);
+        this._repository=repository;
     }
-    async getAllStudents() {
-        let students = await this.baseRepository.getAll();
-        return students;
-    }
+
+
     async getStudent(studentId: number) {
-        return await getManager().getRepository(StudentDetails).findOne(studentId, { relations: ["standard", "booksInfo"] });
+        return await this._repository.findOne(studentId, { relations: ["standard", "booksInfo"] });
     }
-    async updateStudent(studentid: number, updatedStudent: StudentDetails) {
-        let student = await this.baseRepository.updateOne(studentid, updatedStudent);
-        return student;
-    }
-    async deleteStudent(deletedStudent: StudentDetails) {
-        let student = await this.baseRepository.deleteOne(deletedStudent);
-        return student;
-    }
+
 }

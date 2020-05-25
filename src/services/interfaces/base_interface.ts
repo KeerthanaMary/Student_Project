@@ -1,7 +1,7 @@
 export interface IBase<T>
 {
-     createNew(data:T):Promise<T>;
+     create(data:T):Promise<T>;
      getAll():Promise<T[]>;
-     updateOne(id:any,data:T);
-     deleteOne(data:T);
+     update(id:any,data:T);
+     delete(data:T);
 }

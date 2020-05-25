@@ -1,33 +1,29 @@
-import { getManager } from "typeorm";
-import { injectable } from "inversify";
-import { BooksInfo } from "../models/books_taken_info";
+import { getManager, getRepository, Repository } from "typeorm";
+import { injectable, inject } from "inversify";
+import { BooksInfoModel } from "../models/books_taken_info";
 import { BaseRepository } from "./base_repository";
+import { IBookTakenInfo } from "./interfaces/books_taken_info_interfaces";
+import TYPES from "../types/types";
 @injectable()
-export class BookTakenInfoService extends BaseRepository<BookTakenInfoService> {
-
-    baseRepository = new BaseRepository(BooksInfo);
-
-    async createBookInfo(newBookTakenInfo:BooksInfo){
-        let bookInfo = await this.baseRepository.createNew(newBookTakenInfo);
-        return  bookInfo;
+export class BookTakenInfoRepository extends BaseRepository<BooksInfoModel> implements IBookTakenInfo<BooksInfoModel>{
+    protected readonly _repository
+    constructor(@inject(TYPES.booksInfoORMRepository ) repository: Repository<BooksInfoModel>){
+        super(repository);
+        this._repository=repository
     }
-    async getAllBooksInfo() {
-        let booksInfo = await this.baseRepository.getAll();
-        return  booksInfo;
-    }
+
     async getBookTakenInfo(BookTakenid:number){
-        return await getManager().getRepository(BooksInfo).findOne(BookTakenid);
+        return await this._repository.findOne(BookTakenid);
     }
-    async updateBookInfo(bookTakenId:number,bookTakenInfo:BooksInfo){
-        let bookInfo = await this.baseRepository.updateOne(bookTakenId,bookTakenInfo);
-        return  bookInfo;
-    }
-    async deleteBookInfo(bookTakenInfo:BooksInfo){
-        let bookInfo = await this.baseRepository.deleteOne(bookTakenInfo);
-        return  bookInfo;
-    }
-    async getBookTakenStatus(bookId:number,bookStatus:BooksInfo){
-        let book = await this.baseRepository.getBookStatus(bookId,bookStatus);
-        return  book;
+
+    async getBookStatus(bookId: number, bookStatus:BooksInfoModel) {
+        return await this._repository.findOne(bookId, {
+            relations: ['booksInfo'],
+            where: {
+                booksInfo: {
+                    active: bookStatus
+                }
+            }
+        })
     }
 }

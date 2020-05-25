@@ -1,9 +1,9 @@
 import { Entity, Unique, PrimaryGeneratedColumn, JoinColumn, Column, ManyToMany } from "typeorm";
-import { Standard } from "./standard_entity";
+import { StandardModel } from "./standard_entity";
 
 
-@Entity()
-export class Schools {
+@Entity({name: "Schools"})
+export class SchoolModel {
 
     @PrimaryGeneratedColumn()
     @JoinColumn()
@@ -12,6 +12,6 @@ export class Schools {
     @Column("varchar",{length:50,unique:true})
     name: string;
     
-    @ManyToMany(type => Standard, student => student.school)
-    standard: Standard;
+    @ManyToMany(type => StandardModel, student => student.school)
+    standard: StandardModel;
 }

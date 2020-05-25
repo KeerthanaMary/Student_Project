@@ -1,34 +1,29 @@
 import { IBase } from "./interfaces/base_interface";
-import { getManager, ObjectType } from "typeorm";
-import { IBookTakenInfo } from "./interfaces/books_taken_info_interfaces";
+import { getManager, ObjectType, Repository, getConnectionManager, DbOptions } from "typeorm";
+import { injectable, unmanaged } from "inversify";
 
+@injectable()
+export class BaseRepository<T> implements IBase<T>{
 
-export class BaseRepository<T> implements IBase<T>, IBookTakenInfo<T> {
-    private type: ObjectType<T>;
-    constructor(type: ObjectType<T>) {
-        this.type = type;
+    protected readonly _repository: Repository<T>;
+    constructor(@unmanaged() repository: Repository<T>) {
+        this._repository = repository;
+
     }
-    async createNew(data: T): Promise<T> {
-        return await getManager().getRepository(this.type).save(data);
+
+    async create(data: T): Promise<T> {
+        return await this._repository.save(data);
     }
     async getAll(): Promise<T[]> {
-        return await getManager().getRepository(this.type).find();
+        return await this._repository.find();
     }
-    async updateOne(id: any, data: T) {
-        return await getManager().getRepository(this.type).update(id, data);
+    async update(id: any, data: T) {
+        return await this._repository.update(id, data);
     }
-    async deleteOne(data: T) {
-        return await getManager().getRepository(this.type).delete(data);
+    async delete(data: T) {
+        return await this._repository.delete(data);
     }
-    async getBookStatus(bookId: number, bookStatus: T) {
-        return await getManager().getRepository(this.type).findOne(bookId, {
-            relations: ['booksInfo'],
-            where: {
-                booksInfo: {
-                    active: bookStatus
-                }
-            }
-        })
-    }
+
+    
 
 }

@@ -1,9 +1,9 @@
 import { Entity, PrimaryColumn, Column, JoinColumn, OneToOne, Unique, ManyToOne, JoinTable, ManyToMany, PrimaryGeneratedColumn, OneToMany } from "typeorm";
-import { StudentDetails } from "./student_entity";
-import { Schools } from "./schools_entity";
+import { StudentModel } from "./student_entity";
+import {  SchoolModel } from "./schools_entity";
 
-@Entity()
-export class Standard
+@Entity({name: "Standard"})
+export class StandardModel
 {
     @PrimaryGeneratedColumn()
     @JoinColumn()
@@ -12,10 +12,10 @@ export class Standard
     @Column("varchar",{length:50,unique:true})
     className: string;
     
-    @OneToMany(type => StudentDetails, student => student.standard)
-    student:StudentDetails[];
+    @OneToMany(type => StudentModel, student => student.standard)
+    student:StudentModel[];
 
-    @ManyToMany(type => Schools, schools => schools.standard)
+    @ManyToMany(type => SchoolModel, schools => schools.standard)
     @JoinTable()
-    school: Schools[];
+    school: SchoolModel[];
 }

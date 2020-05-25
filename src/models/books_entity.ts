@@ -1,8 +1,8 @@
 import { Entity, Unique, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne, JoinTable, OneToMany, ManyToMany, PrimaryColumn } from "typeorm";
-import { BooksInfo } from "./books_taken_info";
+import { BooksInfoModel } from "./books_taken_info";
 
-@Entity()
-export class Books{
+@Entity({name: "Books"})
+export class BookModel{
 
     @PrimaryGeneratedColumn()
     id: number;
@@ -13,8 +13,8 @@ export class Books{
     @Column("varchar",{length:200})
     author:string;
 
-    @OneToMany(type => BooksInfo, Books => Books.book)
+    @OneToMany(type => BooksInfoModel, Books => Books.book)
     @JoinTable()
-    booksInfo: BooksInfo;
+    booksInfo: BooksInfoModel;
 
 }

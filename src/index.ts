@@ -5,8 +5,6 @@ import * as appConfig from "./services/sql_connection";
 import { InversifyExpressServer } from "inversify-express-utils";
 import container from "./inversify/inversify.config";
 import  "./controller/index";
-// import "./controller/student_controller";
-// import "./controller/standard_controller";
 
 var bodyParser = require('body-parser')
 let server = new InversifyExpressServer(container);
@@ -18,10 +16,9 @@ server.setConfig((app) => {
 const app = server.build();
 app.listen(3000);
 console.log("App is running");
+appConfig.connection;
 
-createConnection(appConfig.dbOptions).then(async connection => {
-console.log("conected to db");
-}).catch(error => console.log("TypeORM connection error: ", error));
+
 
 
 

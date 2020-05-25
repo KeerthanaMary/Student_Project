@@ -2,27 +2,27 @@ import express = require("express");
 import { interfaces, controller, httpGet, httpPost, request, response, httpPatch, httpDelete, httpPut } from "inversify-express-utils";
 import { inject } from "inversify";
 import TYPES from "../types/types";
-import { BookTakenInfoService } from "../services/books_taken_info_service";
-import { BooksInfo } from "../models/books_taken_info";
-import { StudentService } from "../services/student_service";
+import { BookTakenInfoRepository } from "../services/books_taken_info_service";
+import { BooksInfoModel } from "../models/books_taken_info";
+import { StudentRepository } from "../services/student_service";
 @controller("/Books-info")
 export class BooksTakenInfoController implements interfaces.Controller {
 
     public constructor(
-        @inject(TYPES.booksInfoRepository) private bookTakenInfoService: BookTakenInfoService,
-        @inject(TYPES.studentRepository) private studentService: StudentService) {
+        @inject(TYPES.booksInfoRepository) private bookTakenInfoService: BookTakenInfoRepository,
+        @inject(TYPES.studentRepository) private studentService: StudentRepository) {
     }
 
     @httpPost("/")
     public async createBookTakenInfo(@request() req: express.Request, @response() res: express.Response) {
         try {
-            let BookTakeninfo: BooksInfo;
+            let BookTakeninfo: BooksInfoModel;
             BookTakeninfo = req.body;
             let bookInfoId=req.body.id;
             let studentId=req.body.student;
             console.log(BookTakeninfo, "newschool")
             console.log(BookTakeninfo);
-            await this.bookTakenInfoService.createBookInfo(BookTakeninfo).then((booktakeninfo: any) => {
+            await this.bookTakenInfoService.create(BookTakeninfo).then((booktakeninfo: any) => {
                 res.json("Added new bookinfotaken");
                  
             });
@@ -38,7 +38,7 @@ export class BooksTakenInfoController implements interfaces.Controller {
     public async getBooksTakenInfo(@request() req: express.Request, @response() res: express.Response) {
         try {
             console.log("came into controller");
-            await this.bookTakenInfoService.getAllBooksInfo().then((bookinfostaken: BooksInfo[]) => {
+            await this.bookTakenInfoService.getAll().then((bookinfostaken: BooksInfoModel[]) => {
                 console.log(bookinfostaken);
                 res.json(bookinfostaken);
             });
@@ -52,7 +52,7 @@ export class BooksTakenInfoController implements interfaces.Controller {
     @httpGet("/:id")
     public async getBookTakenInfo(@request() req: express.Request, @response() res: express.Response) {
         try {
-            await this.bookTakenInfoService.getBookTakenInfo(req.params.id).then((bookinfotaken: BooksInfo) => {
+            await this.bookTakenInfoService.getBookTakenInfo(req.params.id).then((bookinfotaken: BooksInfoModel) => {
                 res.json(bookinfotaken);
             });
         }
@@ -64,12 +64,12 @@ export class BooksTakenInfoController implements interfaces.Controller {
     @httpPut("/edit/:id")
     public async updateBookTakenInfo(@request() req: express.Request, @response() res: express.Response) {
         console.log("editstudentcontroller")
-        let bookTakenInfo: BooksInfo
+        let bookTakenInfo: BooksInfoModel
         let bookTakenInfoId = req.params.id;
         bookTakenInfo = req.body;
         console.log(bookTakenInfo, "updateone")
         try {
-            await this.bookTakenInfoService.updateBookInfo(bookTakenInfoId, bookTakenInfo).then((bookinfotaken: any) => {
+            await this.bookTakenInfoService.update(bookTakenInfoId, bookTakenInfo).then((bookinfotaken: any) => {
                 res.json("Updated bookinfotaken");
             });
         }
@@ -83,7 +83,7 @@ export class BooksTakenInfoController implements interfaces.Controller {
             let id=req.params.id;
             let status=req.params.status;
             console.log()
-            await this.bookTakenInfoService.getBookTakenStatus(id,status).then((book: BooksInfo) => {
+            await this.bookTakenInfoService.getBookStatus(id,status).then((book: BooksInfoModel) => {
                 res.json(book);
             });
         }
@@ -95,8 +95,8 @@ export class BooksTakenInfoController implements interfaces.Controller {
     public async deleteBookTakenInfo(@request() req: express.Request, @response() res: express.Response) {
         try {
             let bookTakenId=req.params.id;
-            await this.bookTakenInfoService.getBookTakenInfo(bookTakenId).then((bookinfotaken: BooksInfo) => {
-                this.bookTakenInfoService.deleteBookInfo(bookinfotaken).then((bookinfotaken: any) => {
+            await this.bookTakenInfoService.getBookTakenInfo(bookTakenId).then((bookinfotaken: BooksInfoModel) => {
+                this.bookTakenInfoService.delete(bookinfotaken).then((bookinfotaken: any) => {
                     res.json("deleted book info taken");
                 });
             });

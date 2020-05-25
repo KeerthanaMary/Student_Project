@@ -1,9 +1,9 @@
 import {Entity, PrimaryColumn, Column, OneToOne, Unique, JoinColumn, OneToMany, ManyToMany, PrimaryGeneratedColumn, ManyToOne, JoinTable} from "typeorm";
-import { Standard } from "./standard_entity";
-import { BooksInfo } from "./books_taken_info";
+import { StandardModel } from "./standard_entity";
+import { BooksInfoModel } from "./books_taken_info";
 
-@Entity()
-export class StudentDetails {
+@Entity({name: "StudentDetails"})
+export class StudentModel {
  
    
     @PrimaryGeneratedColumn()
@@ -18,10 +18,10 @@ export class StudentDetails {
     @Column("bigint")
     phonenumber:number;
 
-    @ManyToOne(type => Standard, standards => standards.student)
-    standard: Standard[];
+    @ManyToOne(type => StandardModel, standards => standards.student)
+    standard: StandardModel[];
 
-    @ManyToOne(type => BooksInfo, booksInfo => booksInfo.student)
+    @ManyToOne(type => BooksInfoModel, booksInfo => booksInfo.student)
     @JoinTable()
-    bookInfo: BooksInfo;
+    bookInfo: BooksInfoModel;
 }

@@ -1,24 +1,24 @@
 import express = require("express");
 import { interfaces, controller, httpGet, httpPost, request, response, httpPatch, httpDelete, httpPut } from "inversify-express-utils";
-import { StudentService } from "../services/student_service";
+import { StudentRepository } from "../services/student_service";
 import { inject } from "inversify";
 import TYPES from "../types/types";
-import { StudentDetails } from "../models/student_entity";
+import { StudentModel } from "../models/student_entity";
 @controller("/student")
 export class StudentController implements interfaces.Controller {
     public constructor(
-        @inject(TYPES.studentRepository) private studentservice: StudentService) {
+        @inject(TYPES.studentRepository) private studentservice: StudentRepository) {
 
     }
 
     @httpPost("/")
     public async createStudent(@request() req: express.Request, @response() res: express.Response) {
         try {
-            let newstudent: StudentDetails;
+            let newstudent: StudentModel;
             newstudent = req.body;
             console.log(newstudent, "newstudent")
             console.log("new student", newstudent);
-            await this.studentservice.createNew(newstudent).then((students: any) => {
+            await this.studentservice.create(newstudent).then((students: any) => {
                 console.log("new student");
                 res.json("Added new student");
             });
@@ -32,7 +32,7 @@ export class StudentController implements interfaces.Controller {
     public async getStudents(@request() req: express.Request, @response() res: express.Response) {
         try {
             console.log("came into controller");
-            await this.studentservice.getAll().then((students: StudentDetails[]) => {
+            await this.studentservice.getAll().then((students: StudentModel[]) => {
                 console.log(students);
                 res.json(students);
             });
@@ -46,7 +46,7 @@ export class StudentController implements interfaces.Controller {
     @httpGet("/:id")
     public async getStudent(@request() req: express.Request, @response() res: express.Response) {
         try {
-            await this.studentservice.getStudent(req.params.id).then((student: StudentDetails) => {
+            await this.studentservice.getStudent(req.params.id).then((student: StudentModel) => {
                 res.json(student);
             });
         }
@@ -58,12 +58,12 @@ export class StudentController implements interfaces.Controller {
     @httpPut("/:id")
     public async updateStudent(@request() req: express.Request, @response() res: express.Response) {
         console.log("editstudentcontroller")
-        let student: StudentDetails
+        let student: StudentModel
         let studentid = req.params.id;
         student = req.body;
         console.log(student, "updateone")
         try {
-            await this.studentservice.updateOne(studentid, student).then((student: any) => {
+            await this.studentservice.update(studentid, student).then((student: any) => {
                 res.json("Updated student");
             });
         }
@@ -75,8 +75,8 @@ export class StudentController implements interfaces.Controller {
     @httpDelete("/:id")
     public async deleteStudent(@request() req: express.Request, @response() res: express.Response) {
         try {
-            await this.studentservice.getStudent(req.params.id).then((student: StudentDetails) => {
-                this.studentservice.deleteOne(student).then((student: any) => {
+            await this.studentservice.getStudent(req.params.id).then((student: StudentModel) => {
+                this.studentservice.delete(student).then((student: any) => {
                     res.json("deleted student");
                 });
             });

@@ -1,29 +1,19 @@
-import { getManager } from "typeorm";
-import { Standard } from "../models/standard_entity";
-import { injectable } from "inversify";
+import { getManager, getRepository, Repository } from "typeorm";
+import { StandardModel } from "../models/standard_entity";
+import { injectable, inject } from "inversify";
 import { BaseRepository } from "./base_repository";
-@injectable()
-export class StandardService extends BaseRepository<Standard> {
-    
-    baseRepository = new BaseRepository(Standard);
+import TYPES from "../types/types";
 
-    async createStandard(newStandard:Standard){
-        let standard = await this.baseRepository.createNew(newStandard);
-        return  standard;
+@injectable()
+export class StandardRepository extends BaseRepository<StandardModel> {
+    protected readonly _repository;
+    constructor(@inject(TYPES.standardORMRepository ) repository: Repository<StandardModel>,){
+        super(repository);
+        this._repository=repository;
     }
-    async getStandards() {
-        let standards = await this.baseRepository.getAll();
-        return  standards;
-    }
+
     async getStandard(classId:number){
-        return await getManager().getRepository(Standard).findOne(classId,{ relations: ["student","schools"] });
+        return await this._repository.findOne(classId,{ relations: ["student","schools"] });
     }
-    async updateStandard(standardId:number,updateStandard:Standard){
-        let standard = await this.baseRepository.updateOne(standardId,updateStandard);
-        return  standard;
-    }
-    async deleteStandard(deleteStandard:Standard){
-        let standard = await this.baseRepository.deleteOne(deleteStandard);
-        return  standard;
-    }
+
 }
